@@ -9,6 +9,8 @@ import com.alextroy.news22.R
 import com.alextroy.news22.adapter.NewsAdapter
 import com.alextroy.news22.api.NewsApp
 import com.alextroy.news22.model.News
+import com.alextroy.news22.utils.KEY
+import com.alextroy.news22.utils.TRAIL_TEXT
 import com.alextroy.news22.utils.toast
 import kotlinx.android.synthetic.main.list_news.*
 import retrofit2.Call
@@ -35,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun query() {
-        val request = NewsApp.create().getNews("thumbnail,trailText", BuildConfig.NEWS_API_KEY)
+        val request = NewsApp.create().getNews(TRAIL_TEXT, KEY)
 
         request.enqueue(object : Callback<News> {
             override fun onResponse(call: Call<News>?, response: retrofit2.Response<News>?) {

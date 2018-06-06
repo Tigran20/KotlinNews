@@ -11,6 +11,6 @@ interface NewsApi {
     @GET("search")
     fun getNews(
             @Query("show-fields") show_fields: String,
-            @Query("api-key") key: String):
-            Call<News>
+            @Query("api-key") key: String
+    ): Call<News>
 }
