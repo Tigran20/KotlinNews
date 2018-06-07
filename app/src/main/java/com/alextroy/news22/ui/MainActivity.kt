@@ -2,6 +2,7 @@ package com.alextroy.news22.ui
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -12,7 +13,7 @@ import com.alextroy.news22.model.News
 import com.alextroy.news22.utils.KEY
 import com.alextroy.news22.utils.TRAIL_TEXT
 import com.alextroy.news22.utils.toast
-import kotlinx.android.synthetic.main.list_news.*
+import kotlinx.android.synthetic.main.news_list.*
 import retrofit2.Call
 import retrofit2.Callback
 
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.list_news)
+        setContentView(R.layout.news_list)
 
         init()
     }
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         adapter = NewsAdapter(this)
         recycler.adapter = adapter
         recycler.layoutManager = layoutManager
+//        recycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
         refreshData()
     }
@@ -70,7 +72,5 @@ class MainActivity : AppCompatActivity() {
                 toast("Unable to fetch the news")
             }
         })
-
-
     }
 }
