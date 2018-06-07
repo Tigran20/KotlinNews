@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import com.alextroy.news22.BuildConfig
+import android.view.View
 import com.alextroy.news22.R
 import com.alextroy.news22.adapter.NewsAdapter
 import com.alextroy.news22.api.NewsApp
@@ -16,6 +16,7 @@ import kotlinx.android.synthetic.main.list_news.*
 import retrofit2.Call
 import retrofit2.Callback
 
+
 class MainActivity : AppCompatActivity() {
 
     private var adapter: NewsAdapter? = null
@@ -26,7 +27,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.list_news)
 
         init()
-        query()
     }
 
     private fun init() {
@@ -34,6 +34,23 @@ class MainActivity : AppCompatActivity() {
         adapter = NewsAdapter(this)
         recycler.adapter = adapter
         recycler.layoutManager = layoutManager
+
+        refreshData()
+    }
+
+    private fun swipeScreen() {
+        recycler.visibility = View.VISIBLE
+        screen_update.visibility = View.GONE
+    }
+
+
+    private fun refreshData() {
+        swiperefresh.setOnRefreshListener {
+            swipeScreen()
+            toast("News uploaded")
+            query()
+            swiperefresh.isRefreshing = false
+        }
     }
 
     private fun query() {

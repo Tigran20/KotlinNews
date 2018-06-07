@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">News22</string>
+
+    <string name="no_data_available">No data</string>
+    <string name="swipe_the_screen">Swipe the screen</string>
 </resources>
