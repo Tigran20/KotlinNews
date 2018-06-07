@@ -2,9 +2,9 @@ package com.alextroy.news22.ui
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.View
 import com.alextroy.news22.R
 import com.alextroy.news22.adapter.NewsAdapter
@@ -13,31 +13,35 @@ import com.alextroy.news22.model.News
 import com.alextroy.news22.utils.KEY
 import com.alextroy.news22.utils.TRAIL_TEXT
 import com.alextroy.news22.utils.toast
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.news_list.*
-import retrofit2.Call
-import retrofit2.Callback
 
 
 class MainActivity : AppCompatActivity() {
 
+    private var disposable: Disposable? = null
     private var adapter: NewsAdapter? = null
     private var layoutManager: RecyclerView.LayoutManager? = null
+
+    private val newsApp by lazy {
+        NewsApp.create()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.news_list)
 
-        init()
+        initRecyclerView()
+        refreshData()
     }
 
-    private fun init() {
+    private fun initRecyclerView() {
         layoutManager = LinearLayoutManager(this)
         adapter = NewsAdapter(this)
         recycler.adapter = adapter
         recycler.layoutManager = layoutManager
-//        recycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-
-        refreshData()
     }
 
     private fun swipeScreen() {
@@ -55,22 +59,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun data(result: News) {
+        adapter!!.data(result.response.results)
+        adapter!!.notifyDataSetChanged()
+    }
+
     private fun query() {
-        val request = NewsApp.create().getNews(TRAIL_TEXT, KEY)
+        disposable = newsApp.getNews(TRAIL_TEXT, KEY)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                        { result ->
+                            data(result)
+                        },
+                        { error ->
+                            Log.e("Error", error.message)
+                        }
+                )
+    }
 
-        request.enqueue(object : Callback<News> {
-            override fun onResponse(call: Call<News>?, response: retrofit2.Response<News>?) {
-                response?.body().let { news ->
-                    if (news != null) {
-                        adapter!!.data(news.response.results)
-                    }
-                    adapter!!.notifyDataSetChanged()
-                }
-            }
-
-            override fun onFailure(call: Call<News>?, t: Throwable?) {
-                toast("Unable to fetch the news")
-            }
-        })
+    override fun onPause() {
+        super.onPause()
+        disposable?.dispose()
     }
 }
